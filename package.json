@@ -1,23 +1,26 @@
 {
-  "name": "sails-adapter-boilerplate",
+  "name": "sails-parse",
   "version": "0.0.1",
-  "description": "Boilerplate adapter for Sails.js",
-  "main": "BoilerplateAdapter.js",
+  "description": "Parse adapter for Sails.js",
+  "main": "ParseAdapter.js",
   "scripts": {
     "test": "echo \"Adapter should be tested using Sails.js core.\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/balderdashy/sails-adapter-boilerplate.git"
+    "url": "https://github.com/giano/sails-parse.git"
   },
   "keywords": [
+    "parse",
+    "parsejs",
+    "parse.js",
     "orm",
     "waterline",
     "sails",
     "sailsjs",
     "sails.js"
   ],
-  "author": "Your name here",
+  "author": "Stefano Valicchia",
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {

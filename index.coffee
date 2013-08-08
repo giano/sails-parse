@@ -54,6 +54,7 @@ adapter = module.exports =
 
 
   registerCollection: (collection, cb) ->
+    parse_link()
     cb()
 
 

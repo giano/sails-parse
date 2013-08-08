@@ -22,6 +22,7 @@ adapter = module.exports = {
     migrate: "alter"
   },
   registerCollection: function(collection, cb) {
+    parse_link();
     return cb();
   },
   teardown: function(cb) {

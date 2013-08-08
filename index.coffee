@@ -8,7 +8,7 @@ parse_connection = null
 parse_link= ->
   return parse_connection if parse_connection?
   parse_connection = require("./lib/parse.js").Parse
-  parse_connection.initialize(adapter.application_id, adapter.javascript_key)
+  parse_connection.initialize(adapter.config.application_id, adapter.config.javascript_key)
   return parse_connection
 
 adapter = module.exports =

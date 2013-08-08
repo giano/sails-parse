@@ -5,10 +5,18 @@
 async = require("async")
 models = {}
 parse_connection = null
+
+titleize = (str)->
+  return '' unless str?
+  str = String(str).toLowerCase()
+  str.replace /(?:^|\s|-)\S/g, (c) -> c.toUpperCase()
+
+classify = (str)-> titleize(String(str).replace(/[\W_]/g, ' ')).replace(/\s/g, '')
+
 parse_link= ->
   return parse_connection if parse_connection?
   parse_connection = require("./lib/parse.js").Parse
-  parse_connection.initialize(adapter.config.application_id, adapter.config.javascript_key)
+  parse_connection.initialize(adapter.config.application_id, adapter.config.javascript_key, adapter.config.master_key)
   return parse_connection
 
 adapter = module.exports =
@@ -55,7 +63,7 @@ adapter = module.exports =
 
   registerCollection: (collection, cb) ->
     parse_link()
-    cb()
+    adapter.define collection.identity, collection.definition, cb
 
 
   # The following methods are optional
@@ -69,9 +77,11 @@ adapter = module.exports =
 
   # REQUIRED method if integrating with a schemaful database
   define: (collectionName, definition, cb) ->
-    out_model = parse_link().Object.extend(collectionName, definition)
+    cl_name = classify(collectionName)
+    out_model = parse_link().Object.extend(cl_name)
+    out_model._schema = definition
 
-    models[collectionName] = out_model
+    models[collectionName.toLowerCase()] = out_model
     # Define a new "table" or "collection" schema in the data store
     cb()
 
@@ -86,7 +96,7 @@ adapter = module.exports =
 
   # REQUIRED method if integrating with a schemaful database
   drop: (collectionName, cb) ->
-    delete models[collectionName]
+    delete models[collectionName.toLowerCase()]
     # Drop a "table" or "collection" schema from the data store
     cb()
 
@@ -101,8 +111,8 @@ adapter = module.exports =
 
   # REQUIRED method if users expect to call Model.create() or any methods
   create: (collectionName, values, cb) ->
-    return cb("Model not found", null) unless models[collectionName]?
-    new_model = new (models[collectionName])()
+    return cb("Model not found", null) unless models[collectionName.toLowerCase()]?
+    new_model = new (models[collectionName.toLowerCase()])()
     new_model.save values,
       success: (out_elem)->
         cb null, out_elem
@@ -120,9 +130,8 @@ adapter = module.exports =
   # but the core will take care of supporting all the different usages.
   # (e.g. if this is a find(), not a findAll(), it will only send back a single model)
   find: (collectionName, options, cb) ->
-    return cb("Model not found", null) unless models[collectionName]?
-    query = new parse_link().Query(models[collectionName])
-
+    return cb("Model not found", null) unless models[collectionName.toLowerCase()]?
+    query = new (parse_link().Query)(models[collectionName.toLowerCase()])
     if (options?.where?.id?)
       query.get options.where.id,
         success: (out_elem)->

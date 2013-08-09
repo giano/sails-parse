@@ -117,7 +117,7 @@ adapter = module.exports =
       success: (out_elem)->
         cb null, out_elem
 
-      error: (out_elem,error)->
+      error: (out_elem, error)->
         cb error, out_elem
     # Create a single new model specified by values
 
@@ -139,6 +139,8 @@ adapter = module.exports =
         error: (out_elem,error)->
           cb error, null
     else if(options?.where?)
+      query.limit(options?.limit) if options?.limit
+      query.skip(options?.skip) if options?.skip
       for k, v of options?.where
         if _.isObject(v) and v?.comparer?
           query[v?.comparer](k, v.value)
@@ -150,6 +152,8 @@ adapter = module.exports =
           cb null, out_elems
         error: (out_elems,error)->
           cb error, null
+    else
+      return adapter.find(collectionName, {where:options}, cb)
 
         # ...
 

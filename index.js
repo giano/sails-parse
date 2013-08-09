@@ -90,6 +90,12 @@ adapter = module.exports = {
         }
       });
     } else if (((options != null ? options.where : void 0) != null)) {
+      if (options != null ? options.limit : void 0) {
+        query.limit(options != null ? options.limit : void 0);
+      }
+      if (options != null ? options.skip : void 0) {
+        query.skip(options != null ? options.skip : void 0);
+      }
       _ref1 = options != null ? options.where : void 0;
       for (k in _ref1) {
         v = _ref1[k];
@@ -107,6 +113,10 @@ adapter = module.exports = {
           return cb(error, null);
         }
       });
+    } else {
+      return adapter.find(collectionName, {
+        where: options
+      }, cb);
     }
   },
   update: function(collectionName, options, values, cb) {

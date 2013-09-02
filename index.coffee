@@ -141,9 +141,10 @@ adapter = module.exports =
     else if(options?.where?)
       query.limit(options?.limit) if options?.limit
       query.skip(options?.skip) if options?.skip
+
       if options?.order
         for k, v of options?.order
-          if v is "asc"
+          if v.toLowerCase() is "asc"
             query.ascending(k)
           else
             query.descending(k)

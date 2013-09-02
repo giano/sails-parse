@@ -100,7 +100,7 @@ adapter = module.exports = {
         _ref1 = options != null ? options.order : void 0;
         for (k in _ref1) {
           v = _ref1[k];
-          if (v === "asc") {
+          if (v.toLowerCase() === "asc") {
             query.ascending(k);
           } else {
             query.descending(k);

@@ -141,6 +141,13 @@ adapter = module.exports =
     else if(options?.where?)
       query.limit(options?.limit) if options?.limit
       query.skip(options?.skip) if options?.skip
+      if options?.order
+        for k, v of options?.order
+          if v is "asc"
+            query.ascending(k)
+          else
+            query.descending(k)
+
       for k, v of options?.where
         if _.isObject(v) and v?.comparer?
           query[v?.comparer](k, v.value)
@@ -162,7 +169,27 @@ adapter = module.exports =
 
     # Respond with an error or a *list* of models in result set
 
+  native: (collectionName, cb) ->
+     return cb("Model not found", null) unless models[collectionName.toLowerCase()]?
+     cb null, models[collectionName.toLowerCase()]
 
+  count: (collectionName, options, cb) ->
+    return cb("Model not found", null) unless models[collectionName.toLowerCase()]?
+    query = new (parse_link().Query)(models[collectionName.toLowerCase()])
+    if(options?.where?)
+      for k, v of options?.where
+        if _.isObject(v) and v?.comparer?
+          query[v?.comparer](k, v.value)
+        else
+          query.equalTo(k, v)
+
+      query.count
+        success: (out_elems_count)->
+          cb null, out_elems_count
+        error: (out_elems,error)->
+          cb error, null
+    else
+      return adapter.count(collectionName, {where:options}, cb)
 
   # REQUIRED method if users expect to call Model.update()
   update: (collectionName, options, values, cb) ->

@@ -75,7 +75,7 @@ adapter = module.exports = {
     });
   },
   find: function(collectionName, options, cb) {
-    var k, query, v, _ref, _ref1;
+    var k, query, v, _ref, _ref1, _ref2;
     if (models[collectionName.toLowerCase()] == null) {
       return cb("Model not found", null);
     }
@@ -96,9 +96,20 @@ adapter = module.exports = {
       if (options != null ? options.skip : void 0) {
         query.skip(options != null ? options.skip : void 0);
       }
-      _ref1 = options != null ? options.where : void 0;
-      for (k in _ref1) {
-        v = _ref1[k];
+      if (options != null ? options.order : void 0) {
+        _ref1 = options != null ? options.order : void 0;
+        for (k in _ref1) {
+          v = _ref1[k];
+          if (v === "asc") {
+            query.ascending(k);
+          } else {
+            query.descending(k);
+          }
+        }
+      }
+      _ref2 = options != null ? options.where : void 0;
+      for (k in _ref2) {
+        v = _ref2[k];
         if (_.isObject(v) && ((v != null ? v.comparer : void 0) != null)) {
           query[v != null ? v.comparer : void 0](k, v.value);
         } else {
@@ -115,6 +126,42 @@ adapter = module.exports = {
       });
     } else {
       return adapter.find(collectionName, {
+        where: options
+      }, cb);
+    }
+  },
+  "native": function(collectionName, cb) {
+    if (models[collectionName.toLowerCase()] == null) {
+      return cb("Model not found", null);
+    }
+    return cb(null, models[collectionName.toLowerCase()]);
+  },
+  count: function(collectionName, options, cb) {
+    var k, query, v, _ref;
+    if (models[collectionName.toLowerCase()] == null) {
+      return cb("Model not found", null);
+    }
+    query = new (parse_link().Query)(models[collectionName.toLowerCase()]);
+    if (((options != null ? options.where : void 0) != null)) {
+      _ref = options != null ? options.where : void 0;
+      for (k in _ref) {
+        v = _ref[k];
+        if (_.isObject(v) && ((v != null ? v.comparer : void 0) != null)) {
+          query[v != null ? v.comparer : void 0](k, v.value);
+        } else {
+          query.equalTo(k, v);
+        }
+      }
+      return query.count({
+        success: function(out_elems_count) {
+          return cb(null, out_elems_count);
+        },
+        error: function(out_elems, error) {
+          return cb(error, null);
+        }
+      });
+    } else {
+      return adapter.count(collectionName, {
         where: options
       }, cb);
     }

@@ -77,7 +77,7 @@ adapter = module.exports =
 
   # REQUIRED method if integrating with a schemaful database
   define: (collectionName, definition, cb) ->
-    cl_name = classify(collectionName)
+    cl_name = collectionName
     out_model = parse_link().Object.extend(cl_name)
     out_model._schema = definition
 

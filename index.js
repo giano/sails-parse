@@ -44,7 +44,7 @@ adapter = module.exports = {
   },
   define: function(collectionName, definition, cb) {
     var cl_name, out_model;
-    cl_name = classify(collectionName);
+    cl_name = collectionName;
     out_model = parse_link().Object.extend(cl_name);
     out_model._schema = definition;
     models[collectionName.toLowerCase()] = out_model;
